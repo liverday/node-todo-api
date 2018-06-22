@@ -50,7 +50,7 @@ server.get('/todos/:id', (req, res) => {
 
 server.disable('etag');
 server.listen(port, () => {
-    console.log(`Started on port ${port}`)
+    console.log(`Started on port ${port}`);
 });
 
 module.exports = { server };
