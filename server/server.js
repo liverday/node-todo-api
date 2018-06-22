@@ -40,7 +40,7 @@ server.get('/todos/:id', (req, res) => {
     }
     Todo.findById(id).then((todo) => {
         if (!todo) {
-            res.status(400).send({ code: 'ID_NOT_FOUND', message: 'ID not found, try again with a new one' })
+            res.status(404).send({ code: 'ID_NOT_FOUND', message: 'ID not found, try again with a new one' })
         }
         res.send({todo});
     }).catch((e) => {

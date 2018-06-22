@@ -1,12 +1,14 @@
 const expect = require('expect');
 const request = require('supertest');
-
+const { ObjectID } = require('mongodb');
 const { server } = require('../server');
 const { Todo } = require('../models/todo')
 
 const todos = [{
+    _id: new ObjectID(),
     text: 'First dummy todo'
 }, {
+    _id: new ObjectID(),
     text: 'Second dummy todo'
 }];
 
@@ -68,3 +70,29 @@ describe('GET /todos', () => {
             .end(done);
     });
 });
+
+describe('GET /todos', () => {
+    it('should return todo doc', (done) => {
+        request(server)
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(todos[0].text)
+            })
+            .end(done);
+    });
+
+    it('should return 404 if todo not found', (done) => {
+        request(server)
+            .get(`/todos/${new ObjectID().toHexString()}`)
+            .expect(404)
+            .end(done);
+    });
+    
+    it('should return 400 for non-object ids', (done) => {
+        request(server)
+            .get('/todos/123abc')
+            .expect(404)
+            .end(done);
+    });
+})
