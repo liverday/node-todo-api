@@ -14,16 +14,12 @@ var server = express();
 
 server.use(bodyParser.json());
 server.post('/todos', (req, res) => {
-    var todo = new Todo({
-        text: req.body.text,
-        completed: req.body.completed
-    });
-
+    var todo = new Todo(_.pick(req.body, ['text', 'completed']));
     todo.save().then((doc) => {
-        res.send(doc);
-    }, (e) => {
+        res.status(200).send(doc);
+    }).catch((e) => {
         res.status(400).send(e);
-    })
+    });
 });
 
 server.get('/todos', (req, res) => {
@@ -90,6 +86,17 @@ server.patch('/todos/:id', (req, res) => {
     }).catch((e) => {
         res.status(400).send({});
     });
+})
+
+server.post('/users', (req, res) => {
+    var user = new User(_.pick(req.body, ['email', 'password']));
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        res.header("x-auth", token).send(user)
+    }).catch((e) => {
+        res.status(400).send(e);
+    })
 })
 
 module.exports = { server };
