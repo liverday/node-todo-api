@@ -31,7 +31,7 @@ server.get('/todos', (req, res) => {
     }, (e) => {
         res.status(400).send(e);
     })
-})
+});
 
 server.get('/todos/:id', (req, res) => {
     var id = req.params.id;
@@ -42,12 +42,27 @@ server.get('/todos/:id', (req, res) => {
         if (!todo) {
             res.status(404).send({ code: 'ID_NOT_FOUND', message: 'ID not found, try again with a new one' })
         }
-        res.send({todo});
+        res.send({ todo });
+    }).catch((e) => {
+        res.status(400).send({});
+    })
+});
+
+
+server.delete('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    if (!ObjectID.isValid(id)) {
+        res.status(404).send({ code: 'ID_NOT_VALID', message: 'ID not valid, try again with a new one' })
+    }
+    Todo.findByIdAndRemove({ _id: new ObjectID(id) }).then((todo) => {
+        if (!todo) {
+            res.status(404).send({ code: 'ID_NOT_FOUND', message: 'Any document was deleted, we dont found the id specified'})
+        }
+        res.status(200).send({ todo });
     }).catch((e) => {
         res.status(400).send({});
     })
 })
-
 server.disable('etag');
 server.listen(port, () => {
     console.log(`Started on port ${port}`);
