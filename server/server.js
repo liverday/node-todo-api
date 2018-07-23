@@ -39,7 +39,7 @@ app.get('/todos', authenticate, async (req, res) => {
   try {
     const todos = await Todo.find({
       _creator: req.user._id
-    }).sort({ text: 1 }).skip(req.skip).limit(req.limit);
+    }).sort({ text: 1 });
     res.send(todos);
   } catch (e) {
     res.status(400).send(e);
